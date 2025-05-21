@@ -2,6 +2,7 @@ public class Main {
     public static void main(String[] args) {
         BankAccount accountA = new BankAccount(10000.00, "Account A");
         BankAccount accountB = new BankAccount(20000.00, "Account B");
+        System.out.println(accountA.getName());
         accountA.setDestinationAccount(accountB);
         accountB.setDestinationAccount(accountA);
 

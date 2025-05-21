@@ -1,10 +1,12 @@
 import java.util.Random;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class BankAccount implements Runnable {
-    private double bankAccountBBalance;
     private double balance;
     private BankAccount destinationAccount;
     private String accountName;
+    private Lock lock = new ReentrantLock();
 
     public BankAccount(double initialBalance, String accountName) {
         this.balance = initialBalance;
@@ -15,39 +17,62 @@ public class BankAccount implements Runnable {
         this.destinationAccount = destinationAccount;
     }
 
-    public synchronized double getBalance() {
+//    public synchronized double getBalance() {
+//        return balance;
+//    }
+
+    public double getBalance() {
         return balance;
     }
 
-    public synchronized void setBalance(double newBalance) {
+//    public synchronized void setBalance(double newBalance) {
+//        this.balance = newBalance;
+//    }
+
+    public void setBalance(double newBalance) {
         this.balance = newBalance;
     }
+
 
     public String getName(){
         return accountName;
     }
 
-    public synchronized void transfer(double amountToTransfer) {
+//    public synchronized void transferSync(double amountToTransfer) {
+//        balance -= amountToTransfer;
+//        System.out.println("Account " + accountName + "  transferred " + amountToTransfer + destinationAccount.getName());
+//
+//        double dBalance = destinationAccount.getBalance();
+//        destinationAccount.setBalance(dBalance += amountToTransfer);
+//        System.out.println("Destination Account balance: " + dBalance);
+//    }
+
+    public void transferLocks(double amountToTransfer) throws InterruptedException {
+        this.lock.lock();
         balance -= amountToTransfer;
-        System.out.println("Account " + accountName + "  transferred " + amountToTransfer + destinationAccount.getName());
+        System.out.println("Lock A acquired. Account " + accountName + "  transferred " + amountToTransfer + destinationAccount.getName());
+        Thread.sleep(50);
 
-
-//        try { Thread.sleep(50);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-
+        destinationAccount.lock.lock();
+        System.out.println("Lock B acquired");
         double dBalance = destinationAccount.getBalance();
         destinationAccount.setBalance(dBalance += amountToTransfer);
+        destinationAccount.lock.unlock();
         System.out.println("Destination Account balance: " + dBalance);
+        this.lock.unlock();
     }
+
 
     @Override
     public void run() {
         Random random = new Random();
 
         for (int i = 0; i < 10; i++) {
-            transfer(random.nextDouble(100.00));
+            try {
+                transferLocks(random.nextDouble(100.00));
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
         }
 
         System.out.println("Account final balance " + this.getBalance());
