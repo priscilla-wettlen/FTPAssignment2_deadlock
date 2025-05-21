@@ -1,30 +1,23 @@
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class Bankomat {
-    private BankAccount accountA;
-    private BankAccount accountB;
-    private Thread a1Thread;
-    private Thread a2Thread;
+    private BankAccount bankAccountA;
+    private BankAccount bankAccountB;
+    private Thread threadA;
+    private Thread threadB;
 
-    public Bankomat(BankAccount accountA, BankAccount accountB) {
-        this.accountA = accountA;
-        this.accountB = accountB;
-
+    public Bankomat(BankAccount bankAccountA, BankAccount bankAccountB) {
+        this.bankAccountA = bankAccountA;
+        this.bankAccountB = bankAccountB;
     }
 
-    public void createTransaction(){
-        a1Thread = new Thread(accountA);
-        a2Thread = new Thread(accountB);
-
-        a1Thread.start();
-        a2Thread.start();
-
-
-        try {
-            a1Thread.join();
-            a2Thread.join();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-
+    public void initiateTreads(){
+        threadA = new Thread(bankAccountA);
+        threadB = new Thread(bankAccountB);
+        threadA.start();
+        threadB.start();
     }
+
+
 }

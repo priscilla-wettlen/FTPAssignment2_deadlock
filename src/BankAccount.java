@@ -27,15 +27,9 @@ public class BankAccount implements Runnable {
         return accountName;
     }
 
-    public synchronized void transfer(double amountToTransfer) {
+    public void transfer(double amountToTransfer) {
         balance -= amountToTransfer;
         System.out.println("Account " + accountName + "  transferred " + amountToTransfer + destinationAccount.getName());
-
-
-//        try { Thread.sleep(50);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
 
         double dBalance = destinationAccount.getBalance();
         destinationAccount.setBalance(dBalance += amountToTransfer);
